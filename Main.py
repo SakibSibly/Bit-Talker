@@ -8,12 +8,9 @@ import hashlib
 import threading
 import time
 import sys
-import qdarkstyle
 import os
 
-
 connection = Client()
-
 
 def dark():
 	widgets.setStyleSheet("background-color: #333;color: white;")
@@ -85,14 +82,6 @@ class CreateAccount(QMainWindow):
 		else:
 			QMessageBox().warning(self, "Invalid Credential", confirmation,QMessageBox.Ok)
 
-	def dark(self):
-		global night
-		if night:
-			widgets.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-		else:
-			widgets.setStyleSheet("")
-			night = not night
-
 class MainChatWindow(QMainWindow):
 	def __init__(self):
 		super(MainChatWindow, self).__init__()
@@ -114,26 +103,23 @@ class MainChatWindow(QMainWindow):
 		self.show()
 
 	def gotoProfile(self):
-		window4 = ProfileWindow()
-		widgets.addWidget(window4)
-		widgets.setCurrentIndex(3)
+		win = uic.loadUi("ui/profile.ui")
+		win.profile_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
+		
+		UserInfo = connection.send_query("get_all_by_id", [senderID[0][0]])
 
-	def dark(self):
-		global night
-		if night:
-			widgets.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-		else:
-			widgets.setStyleSheet(self.css)
-			night = not night
+		win.profile_name.setText(UserInfo[0][1])
+		win.profile_username.setText(UserInfo[0][2])
+		win.profile_email.setText(UserInfo[0][3])
+		win.profile_id.setText(str(UserInfo[0][0]))
 
-
+		win.exec_()
 
 	def logout(self):
 		wid = widgets.widget(2)
 		widgets.removeWidget(wid)
 		wid.deleteLater()
 		widgets.setCurrentIndex(0)
-
 
 	def userList(self):
 
@@ -200,7 +186,7 @@ class MainChatWindow(QMainWindow):
 
 		self.messages.clear()
 
-    if chats:
+		if chats:
 			for msg in chats:
 				item = QListWidgetItem(msg[1])
 
@@ -229,26 +215,6 @@ class MainChatWindow(QMainWindow):
 			except Exception as e:
 				print(f"[PROBLEM in updateWindow] {e}")
 
-
-class ProfileWindow(QMainWindow):
-    def __init__(self):
-        super(ProfileWindow, self).__init__()
-        uic.loadUi("ui/profile.ui", self)
-        
-        UserInfo = connection.send_query("get_all_by_id", [senderID[0][0]])
- 
-        
-        self.name_field.setText(UserInfo[0][1])
-        self.username_field.setText(UserInfo[0][2])
-        self.email_field.setText(UserInfo[0][3])
-        self.userid_field.setText(str(UserInfo[0][0]))
-            
-        self.back_button.clicked.connect(lambda: widgets.setCurrentIndex(2))
-        self.actionQuit.triggered.connect(exit)
-        self.bt_image.setStyleSheet("image : url(pictures/main_icon.png) no-repeat center;")
-        self.show()
-
-
 def main():
 	app = QApplication([])
 
@@ -263,9 +229,9 @@ def main():
 	window2 = CreateAccount()
 	widgets.addWidget(window2)
 
+	dark()
 	widgets.show()
 	app.exec_()
-
 
 if __name__ == "__main__":
 	main()
