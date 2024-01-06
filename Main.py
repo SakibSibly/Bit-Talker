@@ -7,8 +7,7 @@ from client.Client import Client
 import hashlib
 import threading
 import time
-import sys
-import os
+
 
 connection = Client()
 
