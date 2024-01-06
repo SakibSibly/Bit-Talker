@@ -112,7 +112,8 @@ class MainChatWindow(QMainWindow):
 		win.profile_username.setText(UserInfo[0][2])
 		win.profile_email.setText(UserInfo[0][3])
 		win.profile_id.setText(str(UserInfo[0][0]))
-
+		win.setWindowTitle("BitTalker")
+		win.setWindowIcon(QIcon("pictures/main_icon.png"))
 		win.exec_()
 
 	def logout(self):
@@ -229,7 +230,6 @@ def main():
 	window2 = CreateAccount()
 	widgets.addWidget(window2)
 
-	dark()
 	widgets.show()
 	app.exec_()
 
