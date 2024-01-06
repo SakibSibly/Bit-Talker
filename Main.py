@@ -24,7 +24,7 @@ class LoginForm(QMainWindow):
 		uic.loadUi("ui/login_form.ui", self)
 
 		self.login_button.clicked.connect(self.login)
-		self.signup_button.clicked.connect(lambda : widgets.setCurrentIndex(1))
+		self.signup_button.clicked.connect(lambda: widgets.setCurrentIndex(1))
 		self.actionDarkMode.triggered.connect(dark)
 		self.actionLightMode.triggered.connect(light)
 		self.actionQuit.triggered.connect(exit)
@@ -59,7 +59,7 @@ class CreateAccount(QMainWindow):
 		super(CreateAccount, self).__init__()
 		uic.loadUi("ui/create_account.ui", self)
 
-		self.create_and_login_button.clicked.connect(self.create)
+		self.create_and_login_button.clicked.connect(self.createAccount)
 		self.cancel_button.clicked.connect(lambda: widgets.setCurrentIndex(0))
 		self.actionQuit.triggered.connect(exit)
 		self.actionDarkMode_2.triggered.connect(dark)
@@ -67,7 +67,7 @@ class CreateAccount(QMainWindow):
 		
 		self.show()
 
-	def create(self):
+	def createAccount(self):
 		initial_length = len(str(self.password_field.text()))
 		name = str(self.name_field.text()).strip()
 		username = str(self.username_field.text()).strip()
@@ -108,12 +108,12 @@ class MainChatWindow(QMainWindow):
 		win = uic.loadUi("ui/profile.ui")
 		win.profile_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 		
-		UserInfo = connection.send_query("get_all_by_id", [senderID[0][0]])
+		user_info = connection.send_query("get_all_by_id", [senderID[0][0]])
 
-		win.profile_name.setText(UserInfo[0][1])
-		win.profile_username.setText(UserInfo[0][2])
-		win.profile_email.setText(UserInfo[0][3])
-		win.profile_id.setText(str(UserInfo[0][0]))
+		win.profile_name.setText(user_info[0][1])
+		win.profile_username.setText(user_info[0][2])
+		win.profile_email.setText(user_info[0][3])
+		win.profile_id.setText(str(user_info[0][0]))
 		win.setWindowTitle("BitTalker")
 		win.setWindowIcon(QIcon("pictures/main_icon.png"))
 		win.exec_()
