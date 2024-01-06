@@ -1,0 +1,271 @@
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5 import uic
+from btmodules import Account, Notification
+from client.Client import Client
+import hashlib
+import threading
+import time
+import sys
+import qdarkstyle
+import os
+
+
+connection = Client()
+
+
+def dark():
+	widgets.setStyleSheet("background-color: #333;color: white;")
+
+def light():
+	widgets.setStyleSheet("")
+
+class LoginForm(QMainWindow):
+	def __init__(self):
+		super(LoginForm, self).__init__()
+		uic.loadUi("ui/login_form.ui", self)
+
+		self.login_button.clicked.connect(self.login)
+		self.signup_button.clicked.connect(lambda : widgets.setCurrentIndex(1))
+		self.actionDarkMode.triggered.connect(dark)
+		self.actionLightMode.triggered.connect(light)
+		self.actionQuit.triggered.connect(exit)
+		self.bt_image.setStyleSheet("image : url(pictures/main_icon.png) no-repeat center;")
+		self.show()
+
+	def login(self):
+		
+		email = str(self.email_field.text()).lower().strip()
+		password = hashlib.sha256(str(self.password_field.text()).encode()).hexdigest()
+
+		msg = Account.valid_login(email, password)
+
+		if msg != "Successfully logged in":
+			QMessageBox().warning(self, "Login Failed", msg, QMessageBox.Ok)
+		else:
+			global senderID
+			senderID = connection.send_query("get_id_by_email", [email])
+			
+			self.email_field.clear()
+			self.password_field.clear()
+			self.email_field.setFocus()
+
+			window3 = MainChatWindow()
+			widgets.addWidget(window3)
+			widgets.setCurrentIndex(2)
+			
+class CreateAccount(QMainWindow):
+
+	def __init__(self):
+		super(CreateAccount, self).__init__()
+		uic.loadUi("ui/create_account.ui", self)
+
+		self.create_and_login_button.clicked.connect(self.create)
+		self.cancel_button.clicked.connect(lambda: widgets.setCurrentIndex(0))
+		self.actionQuit.triggered.connect(exit)
+		self.actionDarkMode_2.triggered.connect(dark)
+		self.actionLightMode_2.triggered.connect(light)
+		
+		self.show()
+
+	def create(self):
+		initial_length = len(str(self.password_field.text()))
+		name = str(self.name_field.text()).strip()
+		username = str(self.username_field.text()).strip()
+		email = str(self.email_field.text()).strip()
+		password = hashlib.sha256(str(self.password_field.text()).encode()).hexdigest()
+		re_password = hashlib.sha256(str(self.password_field_2.text()).encode()).hexdigest()
+
+		confirmation = Account.validate(name, username, email, password, re_password, initial_length)
+
+		if confirmation == "Shob E Maya":
+			QMessageBox().information(self, "Status", Account.create(name, username, email, password), QMessageBox.Ok)
+			widgets.setCurrentIndex(0)
+		else:
+			QMessageBox().warning(self, "Invalid Credential", confirmation,QMessageBox.Ok)
+
+	def dark(self):
+		global night
+		if night:
+			widgets.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+		else:
+			widgets.setStyleSheet("")
+			night = not night
+
+class MainChatWindow(QMainWindow):
+	def __init__(self):
+		super(MainChatWindow, self).__init__()
+		uic.loadUi("ui/chatting_window.ui", self)
+
+		self.search_bar.textChanged.connect(lambda: self.searchList(self.search_bar.text()))
+		
+		self.v_spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+		self.userList_layout = QVBoxLayout(self.user_list)
+		self.userList()
+  
+		self.send_button.clicked.connect(self.send)
+
+		self.actionProfile.triggered.connect(self.gotoProfile)
+		self.actionDarkMode_3.triggered.connect(dark)
+		self.actionLightMode_3.triggered.connect(light)		
+		self.actionLogout.triggered.connect(self.logout)
+
+		self.show()
+
+	def gotoProfile(self):
+		window4 = ProfileWindow()
+		widgets.addWidget(window4)
+		widgets.setCurrentIndex(3)
+
+	def dark(self):
+		global night
+		if night:
+			widgets.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+		else:
+			widgets.setStyleSheet(self.css)
+			night = not night
+
+
+
+	def logout(self):
+		wid = widgets.widget(2)
+		widgets.removeWidget(wid)
+		wid.deleteLater()
+		widgets.setCurrentIndex(0)
+
+
+	def userList(self):
+
+		names = connection.send_query("fetch_user", [senderID[0][0]])
+
+		for username in names:
+			user = uic.loadUi("ui//user.ui")
+			parts = user.findChildren(QPushButton)
+
+			img = parts[0]
+			img.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
+			
+			u_name = parts[1]
+			u_name.setText(username[0])
+
+			u_name.clicked.connect(lambda clicked, name=username: self.showChats(name))
+
+			self.userList_layout.addWidget(user)
+
+		self.userList_layout.addItem(self.v_spacer)
+
+	def searchList(self,target_name):
+
+		for widget in self.user_list.findChildren(QWidget):
+			widget.deleteLater()
+
+		self.userList_layout.removeItem(self.v_spacer)
+
+		names = connection.send_query("fetch_user_search", [target_name,senderID[0][0]])
+
+		for username in names:
+			user = uic.loadUi("ui//user.ui")
+			parts = user.findChildren(QPushButton)
+
+			img = parts[0]
+			img.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
+			
+			u_name = parts[1]
+			u_name.setText(username[0])
+			u_name.clicked.connect(lambda clicked, name=username: self.showChats(name))
+			
+			self.userList_layout.addWidget(user)
+
+		self.userList_layout.addItem(self.v_spacer)
+
+	def send(self):
+		if self.message_field.text():
+			item = QListWidgetItem(self.message_field.text())
+			item.setTextAlignment(Qt.AlignRight)
+			
+			self.messages.addItem(item)
+
+			connection.send_query("update_chats", [senderID[0][0],receiverID[0][0], self.message_field.text()])
+			self.message_field.clear()
+
+	def showChats(self, nameOfUser):
+
+		self.user_name.setText(nameOfUser[0])
+		self.user_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
+
+		global receiverID
+		receiverID = connection.send_query("get_id_by_username", [nameOfUser[0]])
+		chats = connection.send_query("showMessages", [senderID[0][0],receiverID[0][0]])
+
+		self.messages.clear()
+
+    if chats:
+			for msg in chats:
+				item = QListWidgetItem(msg[1])
+
+				if msg[0] == senderID[0][0]:
+					item.setTextAlignment(Qt.AlignRight)
+
+				self.messages.addItem(item)
+				connection.send_query("message_taken", [receiverID[0][0], senderID[0][0]])
+				connection.send_query("message_taken", [senderID[0][0], receiverID[0][0]])
+
+		message_lookup = threading.Thread(target=self.updateWindow)
+		message_lookup.start() 
+	
+	def updateWindow(self):
+		while True:
+			try:
+				time.sleep(3)
+
+				msg = connection.send_query("look_for_message", [receiverID[0][0], senderID[0][0]])
+				if msg:
+					for messages in msg:
+						self.messages.addItem(str(messages[0]))
+						connection.send_query("message_taken", [receiverID[0][0], senderID[0][0]])
+						retrieved_name = connection.send_query('get_all_by_id', [receiverID[0][0]])[0][1]
+						Notification.create_notification(f"New Message from {retrieved_name}", str(messages[0]))
+			except Exception as e:
+				print(f"[PROBLEM in updateWindow] {e}")
+
+
+class ProfileWindow(QMainWindow):
+    def __init__(self):
+        super(ProfileWindow, self).__init__()
+        uic.loadUi("ui/profile.ui", self)
+        
+        UserInfo = connection.send_query("get_all_by_id", [senderID[0][0]])
+ 
+        
+        self.name_field.setText(UserInfo[0][1])
+        self.username_field.setText(UserInfo[0][2])
+        self.email_field.setText(UserInfo[0][3])
+        self.userid_field.setText(str(UserInfo[0][0]))
+            
+        self.back_button.clicked.connect(lambda: widgets.setCurrentIndex(2))
+        self.actionQuit.triggered.connect(exit)
+        self.bt_image.setStyleSheet("image : url(pictures/main_icon.png) no-repeat center;")
+        self.show()
+
+
+def main():
+	app = QApplication([])
+
+	global widgets
+	widgets = QStackedWidget()
+	widgets.setWindowTitle("BitTalker")
+	widgets.setWindowIcon(QIcon("pictures/main_icon.png"))
+
+	window1 = LoginForm()
+	widgets.addWidget(window1)
+
+	window2 = CreateAccount()
+	widgets.addWidget(window2)
+
+	widgets.show()
+	app.exec_()
+
+
+if __name__ == "__main__":
+	main()
