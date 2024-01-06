@@ -7,16 +7,16 @@ from client.Client import Client
 import hashlib
 import threading
 import time
-import sys
-import os
-
 connection = Client()
+
 
 def dark():
 	widgets.setStyleSheet("background-color: #333;color: white;")
 
+
 def light():
 	widgets.setStyleSheet("")
+
 
 class LoginForm(QMainWindow):
 	def __init__(self):
@@ -52,13 +52,14 @@ class LoginForm(QMainWindow):
 			widgets.addWidget(window3)
 			widgets.setCurrentIndex(2)
 			
+
 class CreateAccount(QMainWindow):
 
 	def __init__(self):
 		super(CreateAccount, self).__init__()
 		uic.loadUi("ui/create_account.ui", self)
 
-		self.create_and_login_button.clicked.connect(self.create)
+		self.create_and_login_button.clicked.connect(self.createAccount)
 		self.cancel_button.clicked.connect(lambda: widgets.setCurrentIndex(0))
 		self.actionQuit.triggered.connect(exit)
 		self.actionDarkMode_2.triggered.connect(dark)
@@ -66,7 +67,7 @@ class CreateAccount(QMainWindow):
 		
 		self.show()
 
-	def create(self):
+	def createAccount(self):
 		initial_length = len(str(self.password_field.text()))
 		name = str(self.name_field.text()).strip()
 		username = str(self.username_field.text()).strip()
@@ -82,6 +83,7 @@ class CreateAccount(QMainWindow):
 		else:
 			QMessageBox().warning(self, "Invalid Credential", confirmation,QMessageBox.Ok)
 
+
 class MainChatWindow(QMainWindow):
 	def __init__(self):
 		super(MainChatWindow, self).__init__()
@@ -92,7 +94,7 @@ class MainChatWindow(QMainWindow):
 		self.v_spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 		self.userList_layout = QVBoxLayout(self.user_list)
 		self.userList()
-  
+
 		self.send_button.clicked.connect(self.send)
 
 		self.actionProfile.triggered.connect(self.gotoProfile)
@@ -106,12 +108,12 @@ class MainChatWindow(QMainWindow):
 		win = uic.loadUi("ui/profile.ui")
 		win.profile_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 		
-		UserInfo = connection.send_query("get_all_by_id", [senderID[0][0]])
+		user_info = connection.send_query("get_all_by_id", [senderID[0][0]])
 
-		win.profile_name.setText(UserInfo[0][1])
-		win.profile_username.setText(UserInfo[0][2])
-		win.profile_email.setText(UserInfo[0][3])
-		win.profile_id.setText(str(UserInfo[0][0]))
+		win.profile_name.setText(user_info[0][1])
+		win.profile_username.setText(user_info[0][2])
+		win.profile_email.setText(user_info[0][3])
+		win.profile_id.setText(str(user_info[0][0]))
 		win.setWindowTitle("BitTalker")
 		win.setWindowIcon(QIcon("pictures/main_icon.png"))
 		win.exec_()
@@ -216,6 +218,7 @@ class MainChatWindow(QMainWindow):
 			except Exception as e:
 				print(f"[PROBLEM in updateWindow] {e}")
 
+
 def main():
 	app = QApplication([])
 
@@ -232,6 +235,7 @@ def main():
 
 	widgets.show()
 	app.exec_()
+
 
 if __name__ == "__main__":
 	main()
