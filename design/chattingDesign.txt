@@ -1,0 +1,77 @@
+QGroupBox{
+	border :  none;
+}
+
+#user_list QPushButton, #user_photo, #user_name{
+margin : 0px;
+padding : 0px;
+background-color : none;
+height : 60%;
+width: 100%;
+border : none;
+text-align : left;
+}
+
+#search_bar{
+border : 1px solid rgb(154, 188, 223);
+border-radius : 8px;
+padding : 5px;
+height : 32%;
+font: 12pt "Times New Roman";
+}
+
+#user_list{
+border: none;
+border-right : 1px solid rgb(207, 207, 207);
+}
+
+#user_list QFrame, name_frame{
+margin : 0px;
+padding : 0px;
+background-color : none;
+height : 60%;
+width: 100%;
+border : none;
+text-align : left;
+border-bottom : 1px solid rgb(207, 207, 207);
+}
+
+#user_list QFrame:hover{
+border : 1px solid blue;
+border-radius : 15px;
+background-color : qconicalgradient(cx:0.710227, cy:0.188, angle:0, stop:0 rgba(0, 0, 0, 168), stop:1 rgba(255, 255, 255, 255));
+}
+
+#messages{
+border : none;
+padding : 0px;
+margin : 0px;
+/*background-color : rgb(240, 240, 240);*/
+}
+
+#messages::item{
+margin : 10px;
+padding : 10px;
+border-radius : 10px;
+border : 1px solid rgb(213, 213, 213);
+/*background : rgb(231, 231, 231);*/
+height : 30%;
+}
+
+#message_field{
+font: 12pt "Times New Roman";
+border-radius : 8px;
+height : 55%;
+}
+
+#send_button{
+color:"White";
+font: 12pt "Times New Roman";
+background-color: rgb(85, 170, 255);
+border-radius: 10px;
+padding: 5px;
+}
+
+
+
+
