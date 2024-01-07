@@ -223,8 +223,6 @@ class MainChatWindow(QMainWindow):
 
 		self.buttons_list[button] = True
 
-		print(button.isChecked())
-
 		self.user_name.setText(nameOfUser[0])
 		self.user_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 
@@ -271,6 +269,9 @@ class DeleteAccount(QMainWindow):
 		self.bt_image.setStyleSheet("image : url(pictures/main_icon.png) no-repeat center;")
 		self.delete_button.clicked.connect(self.deleteUser)
 		self.cancel_button.clicked.connect(self.backToMainChatWindow)
+		self.actionDarkMode_4.triggered.connect(dark)
+		self.actionLightMode_4.triggered.connect(light)
+
 		self.show()
 
 	def deleteUser(self):
@@ -319,6 +320,7 @@ def main():
 
 	window2 = CreateAccount()
 	widgets.addWidget(window2)
+
 
 	widgets.show()
 	app.exec_()
