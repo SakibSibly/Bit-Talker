@@ -7,7 +7,10 @@ from client.Client import Client
 import hashlib
 import threading
 import time
+
+
 connection = Client()
+thread_life = True
 
 
 def dark():
@@ -47,6 +50,9 @@ class LoginForm(QMainWindow):
 			self.email_field.clear()
 			self.password_field.clear()
 			self.email_field.setFocus()
+
+			global thread_life
+			thread_life = True
 
 			window3 = MainChatWindow()
 			widgets.addWidget(window3)
@@ -102,10 +108,16 @@ class MainChatWindow(QMainWindow):
 
 		self.actionProfile.triggered.connect(self.gotoProfile)
 		self.actionDarkMode_3.triggered.connect(dark)
-		self.actionLightMode_3.triggered.connect(light)		
+		self.actionLightMode_3.triggered.connect(light)
+		self.actionExit.triggered.connect(self.terminate)
 		self.actionLogout.triggered.connect(self.logout)
 
 		self.show()
+
+	def terminate(self):
+		global thread_life
+		thread_life = False
+		exit()
 
 	def gotoProfile(self):
 		win = uic.loadUi("ui/profile.ui")
@@ -122,6 +134,8 @@ class MainChatWindow(QMainWindow):
 		win.exec_()
 
 	def logout(self):
+		global thread_life
+		thread_life = False
 		wid = widgets.widget(2)
 		widgets.removeWidget(wid)
 		wid.deleteLater()
@@ -204,7 +218,9 @@ class MainChatWindow(QMainWindow):
 				connection.sendQuery("message_taken", [senderID[0][0], receiverID[0][0]])
 	
 	def updateWindow(self):
-		while True:
+		global thread_life
+
+		while thread_life:
 			try:
 				time.sleep(3)
 

@@ -24,10 +24,10 @@ class Client:
             result_length = int(client.recv(RESULT_HEADER).decode())
             result = pickle.loads(client.recv(result_length))
 
-            return result # result is a list
+            return result  # result is a list
         
         except Exception as e:
             print(f"[PROBLEM] {e}")
             return [(0,)]
             # Can create problem if connection is lost from the server
-            # then 0 will be shown to the receivers side as sent message
+            # then 0 will be shown to the receivers side as a sent message
