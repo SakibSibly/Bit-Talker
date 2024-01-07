@@ -321,7 +321,6 @@ def main():
 	window2 = CreateAccount()
 	widgets.addWidget(window2)
 
-
 	widgets.show()
 	app.exec_()
 
