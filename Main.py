@@ -191,8 +191,11 @@ class MainChatWindow(QMainWindow):
 			
 			u_name = parts[1]
 			u_name.setText(username[0])
-			u_name.clicked.connect(lambda clicked, name=username: self.showChats(name))
-			
+
+			u_name.setCheckable(True)
+			u_name.setChecked(False)
+			self.buttons_list[u_name] = u_name.isChecked()
+			u_name.clicked.connect(lambda clicked, name=username, btn=u_name: self.showChats(name,btn))			
 			self.userList_layout.addWidget(user)
 
 		self.userList_layout.addItem(self.v_spacer)
