@@ -95,6 +95,9 @@ class MainChatWindow(QMainWindow):
 		self.userList_layout = QVBoxLayout(self.user_list)
 		self.userList()
 
+		message_lookup = threading.Thread(target=self.updateWindow)
+		message_lookup.start()
+
 		self.send_button.clicked.connect(self.send)
 
 		self.actionProfile.triggered.connect(self.gotoProfile)
@@ -144,7 +147,7 @@ class MainChatWindow(QMainWindow):
 
 		self.userList_layout.addItem(self.v_spacer)
 
-	def searchList(self,target_name):
+	def searchList(self, target_name):
 
 		for widget in self.user_list.findChildren(QWidget):
 			widget.deleteLater()
@@ -199,9 +202,6 @@ class MainChatWindow(QMainWindow):
 				self.messages.addItem(item)
 				connection.sendQuery("message_taken", [receiverID[0][0], senderID[0][0]])
 				connection.sendQuery("message_taken", [senderID[0][0], receiverID[0][0]])
-
-		message_lookup = threading.Thread(target=self.updateWindow)
-		message_lookup.start() 
 	
 	def updateWindow(self):
 		while True:
@@ -214,7 +214,7 @@ class MainChatWindow(QMainWindow):
 						self.messages.addItem(str(messages[0]))
 						connection.sendQuery("message_taken", [receiverID[0][0], senderID[0][0]])
 						retrieved_name = connection.sendQuery('get_all_by_id', [receiverID[0][0]])[0][1]
-						Notification.create_notification(f"New Message from {retrieved_name}", str(messages[0]))
+						Notification.createNotification(f"New Message from {retrieved_name}", str(messages[0]))
 			except Exception as e:
 				print(f"[PROBLEM in updateWindow] {e}")
 
