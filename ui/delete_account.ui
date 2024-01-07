@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1184</width>
-    <height>818</height>
+    <width>722</width>
+    <height>515</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -186,62 +186,60 @@ border : 2px solid  rgb(171, 203, 233);
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string/>
-         </property>
-         <layout class="QFormLayout" name="formLayout_2">
-          <item row="0" column="1">
-           <widget class="QPushButton" name="cancel_button">
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background: rgb(0, 170, 0);</string>
-            </property>
-            <property name="text">
-             <string>Cancel</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="1">
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QFormLayout" name="formLayout_2">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+       </property>
+       <property name="labelAlignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="formAlignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <item row="0" column="0">
         <widget class="QPushButton" name="delete_button">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="contextMenuPolicy">
-          <enum>Qt::DefaultContextMenu</enum>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
          <property name="styleSheet">
-          <string notr="true"/>
+          <string notr="true">width : 200%;
+background : red;</string>
          </property>
          <property name="text">
-          <string>Delete My Account</string>
+          <string>Delete Acount</string>
          </property>
-         <property name="shortcut">
-          <string>Return</string>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QFormLayout" name="formLayout_3">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+       </property>
+       <property name="labelAlignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="formAlignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="cancel_button">
+         <property name="styleSheet">
+          <string notr="true">background : green;</string>
+         </property>
+         <property name="text">
+          <string>Cancel</string>
          </property>
         </widget>
        </item>
@@ -268,8 +266,8 @@ border : 2px solid  rgb(171, 203, 233);
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1184</width>
-     <height>26</height>
+     <width>722</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menufile">
@@ -280,8 +278,8 @@ border : 2px solid  rgb(171, 203, 233);
      <property name="title">
       <string>Theme</string>
      </property>
-     <addaction name="actionLightMode"/>
-     <addaction name="actionDarkMode"/>
+     <addaction name="actionLightMode_4"/>
+     <addaction name="actionDarkMode_4"/>
     </widget>
     <addaction name="menuTheme"/>
     <addaction name="actionQuit"/>
@@ -294,7 +292,7 @@ border : 2px solid  rgb(171, 203, 233);
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionDarkMode">
+  <action name="actionDarkMode_4">
    <property name="text">
     <string>Dark Mode</string>
    </property>
@@ -304,7 +302,7 @@ border : 2px solid  rgb(171, 203, 233);
     <string>nor</string>
    </property>
   </action>
-  <action name="actionLightMode">
+  <action name="actionLightMode_4">
    <property name="text">
     <string>Light Mode</string>
    </property>
