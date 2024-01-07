@@ -47,6 +47,46 @@ def create_account(name, username, email, password):
     db.connection.commit()
 
 
+def eligible_for_deletion(user_id, name, username, email, password):
+    db.cursor.execute(
+        f"""
+        SELECT COUNT(*)
+        FROM user_info
+        WHERE
+            id = %s
+            AND name = %s
+            AND username = %s
+            AND email = %s
+            AND password = %s;
+        """, (user_id, name, username, email, password)
+    )
+
+    result = db.cursor.fetchall()
+    if len(result):
+        db.cursor.execute(
+            f"""
+                DELETE FROM user_chat
+                WHERE
+                    sender_id = %s
+                    OR receiver_id = %s;
+                """, (user_id, user_id)
+        )
+        db.connection.commit()
+        return result
+    else:
+        return []
+
+
+def delete_account(email):
+    db.cursor.execute(
+        f"""
+        DELETE FROM user_info
+        WHERE email = %s
+        """, (email,)
+    )
+    db.connection.commit()
+
+
 def fetch_user_search(name, senderID):
     db.cursor.execute(
         f'''

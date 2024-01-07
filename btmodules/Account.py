@@ -32,7 +32,7 @@ def validate(name,username,email,password,re_password,initial_length):
 	elif dbase[0][0] == username:
 		return "Username isn't available!"
 	else:
-		return "Email is already regestered!"
+		return "Email is already registered!"
 	
 
 def create(name, username, email, password):
@@ -54,5 +54,10 @@ def valid_login(email, password):
 		return "Invalid login Credential"
 
 
-def delete():
-	pass
+def delete(user_id, name, username, email, password):
+	result = connection.sendQuery("eligible_for_deletion", [user_id, name, username, email, password])
+
+	if result[0][0]:
+		return "Valid"
+	else:
+		return "Email or Password didn't match!"

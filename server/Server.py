@@ -13,6 +13,7 @@ ADDR = (SERVER, PORT)
 server = socket.socket()
 server.bind(ADDR)
 
+
 def handle_client(connection, address):
     print(f"[NEW CONNECTION] {address} connected.\n")
     
@@ -52,7 +53,7 @@ def handle_client(connection, address):
             
 def start():
     server.listen()
-    
+
     while True:
         connection, address = server.accept()
         thread = threading.Thread(target=handle_client, args=(connection, address))

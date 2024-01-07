@@ -84,8 +84,8 @@ class CreateAccount(QMainWindow):
 		confirmation = Account.validate(name, username, email, password, re_password, initial_length)
 
 		if confirmation == "Shob E Maya":
-			QMessageBox().information(self, "Status", Account.create(name, username, email, password), QMessageBox.Ok)
 			widgets.setCurrentIndex(0)
+			QMessageBox().information(self, "Status", Account.create(name, username, email, password), QMessageBox.Ok)
 		else:
 			QMessageBox().warning(self, "Invalid Credential", confirmation,QMessageBox.Ok)
 
@@ -109,10 +109,16 @@ class MainChatWindow(QMainWindow):
 		self.actionProfile.triggered.connect(self.gotoProfile)
 		self.actionDarkMode_3.triggered.connect(dark)
 		self.actionLightMode_3.triggered.connect(light)
+		self.actionDelete.triggered.connect(self.gotoAccountDeletion)
 		self.actionExit.triggered.connect(self.terminate)
 		self.actionLogout.triggered.connect(self.logout)
 
 		self.show()
+
+	def gotoAccountDeletion(self):
+		window4 = DeleteAccount()
+		widgets.addWidget(window4)
+		widgets.setCurrentIndex(3)
 
 	def terminate(self):
 		global thread_life
@@ -234,6 +240,49 @@ class MainChatWindow(QMainWindow):
 			except Exception as e:
 				print(f"[PROBLEM in updateWindow] {e}")
 
+
+class DeleteAccount(QMainWindow):
+	def __init__(self):
+		super(DeleteAccount, self).__init__()
+		uic.loadUi("ui/delete_account.ui", self)
+
+		self.bt_image.setStyleSheet("image : url(pictures/main_icon.png) no-repeat center;")
+		self.delete_button.clicked.connect(self.deleteUser)
+		self.cancel_button.clicked.connect(self.backToMainChatWindow)
+		self.show()
+
+	def deleteUser(self):
+		email = self.email_field.text()
+		password = hashlib.sha256(str(self.password_field.text()).encode()).hexdigest()
+
+		user_info = connection.sendQuery("get_all_by_id", [senderID[0][0]])
+		user_id = user_info[0][0]
+		name = user_info[0][1]
+		username = user_info[0][2]
+
+		msg = Account.delete(user_id, name, username, email, password)
+
+		if msg != "Valid":
+			QMessageBox().warning(self, "Invalid Credential", msg, QMessageBox.Ok)
+		else:
+			connection.sendQuery("delete_account", [email])
+			global thread_life
+			thread_life = False
+			wid = widgets.widget(3)
+			widgets.removeWidget(wid)
+			wid.deleteLater()
+
+			wid = widgets.widget(2)
+			widgets.removeWidget(wid)
+			wid.deleteLater()
+			widgets.setCurrentIndex(0)
+			QMessageBox().warning(self, "Account update", "Account Successfully Deleted!", QMessageBox.Ok)
+
+	def backToMainChatWindow(self):
+		wid = widgets.widget(3)
+		widgets.removeWidget(wid)
+		wid.deleteLater()
+		widgets.setCurrentIndex(2)
 
 def main():
 	app = QApplication([])
