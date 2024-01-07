@@ -307,7 +307,7 @@ border : 2px solid  rgb(171, 203, 233);
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionQuit">
    <property name="text">
-    <string>Quit</string>
+    <string>Exit</string>
    </property>
   </action>
   <action name="actionDarkMode">

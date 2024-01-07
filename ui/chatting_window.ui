@@ -321,10 +321,12 @@ padding: 5px;
       <string>Account Action</string>
      </property>
      <addaction name="actionProfile"/>
+     <addaction name="actionDelete"/>
      <addaction name="actionLogout"/>
     </widget>
     <addaction name="menuTheme"/>
     <addaction name="menuAccount_Action"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menuMenu"/>
   </widget>
@@ -357,6 +359,16 @@ padding: 5px;
   <action name="actionOk">
    <property name="text">
     <string>Ok</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="text">
+    <string>Delete My Account</string>
    </property>
   </action>
  </widget>

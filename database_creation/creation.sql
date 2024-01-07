@@ -2,7 +2,7 @@ CREATE DATABASE db_bit_talker;
 USE db_bit_talker;
 
 CREATE TABLE IF NOT EXISTS user_info (
-	  id INT PRIMARY KEY auto_increment,
+	id INT PRIMARY KEY auto_increment,
     name VARCHAR(100),
     username VARCHAR(100),
     email VARCHAR(100),
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 );
 
 CREATE TABLE user_chat (
-	  sender_id INT,
+	sender_id INT,
     receiver_id INT,
     message VARCHAR(500),
     message_date DATE,

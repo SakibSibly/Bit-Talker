@@ -1,4 +1,4 @@
-from email_validator import validate_email,EmailNotValidError
+from email_validator import validate_email, EmailNotValidError
 from client.Client import Client
 connection = Client()
 
@@ -24,39 +24,40 @@ def validate(name,username,email,password,re_password,initial_length):
 	elif initial_length < 8:
 		return "Too small password!"
 
-	dbase = connection.send_query("database_check", [username,email])
+	dbase = connection.sendQuery("database_check", [username, email])
 	print(dbase)
- 
+
 	if not len(dbase):
 		return "Shob E Maya"
 	elif dbase[0][0] == username:
 		return "Username isn't available!"
 	else:
-		return "Email is already regestered!"
+		return "Email is already registered!"
 	
-		
 
-def create(name,username,email,password):
-	result = connection.send_query("database_check", [username,email])
+def create(name, username, email, password):
+	result = connection.sendQuery("database_check", [username, email])
 	
 	if result:
 		return f'"{email}" is already used by another user!'
 	else:
-		connection.send_query("create_account", [name,username,email,password])
+		connection.sendQuery("create_account", [name, username, email, password])
 		return "Account created successfully"
 
 
 def valid_login(email, password):
-	result = connection.send_query("valid_login", [email,password])
-	# print(result)
- 
+	result = connection.sendQuery("valid_login", [email, password])
+
 	if result[0][0]:
 		return "Successfully logged in"
 	else:
 		return "Invalid login Credential"
 
-def search():
-	pass
 
-def delete():
-	pass
+def delete(user_id, name, username, email, password):
+	result = connection.sendQuery("eligible_for_deletion", [user_id, name, username, email, password])
+
+	if result[0][0]:
+		return "Valid"
+	else:
+		return "Email or Password didn't match!"
