@@ -42,7 +42,7 @@ class LoginForm(QMainWindow):
 			QMessageBox().warning(self, "Login Failed", msg, QMessageBox.Ok)
 		else:
 			global senderID
-			senderID = connection.send_query("get_id_by_email", [email])
+			senderID = connection.sendQuery("get_id_by_email", [email])
 			
 			self.email_field.clear()
 			self.password_field.clear()
@@ -108,7 +108,7 @@ class MainChatWindow(QMainWindow):
 		win = uic.loadUi("ui/profile.ui")
 		win.profile_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 		
-		user_info = connection.send_query("get_all_by_id", [senderID[0][0]])
+		user_info = connection.sendQuery("get_all_by_id", [senderID[0][0]])
 
 		win.profile_name.setText(user_info[0][1])
 		win.profile_username.setText(user_info[0][2])
@@ -126,7 +126,7 @@ class MainChatWindow(QMainWindow):
 
 	def userList(self):
 
-		names = connection.send_query("fetch_user", [senderID[0][0]])
+		names = connection.sendQuery("fetch_user", [senderID[0][0]])
 
 		for username in names:
 			user = uic.loadUi("ui//user.ui")
@@ -151,7 +151,7 @@ class MainChatWindow(QMainWindow):
 
 		self.userList_layout.removeItem(self.v_spacer)
 
-		names = connection.send_query("fetch_user_search", [target_name,senderID[0][0]])
+		names = connection.sendQuery("fetch_user_search", [target_name, senderID[0][0]])
 
 		for username in names:
 			user = uic.loadUi("ui//user.ui")
@@ -175,7 +175,7 @@ class MainChatWindow(QMainWindow):
 			
 			self.messages.addItem(item)
 
-			connection.send_query("update_chats", [senderID[0][0],receiverID[0][0], self.message_field.text()])
+			connection.sendQuery("update_chats", [senderID[0][0], receiverID[0][0], self.message_field.text()])
 			self.message_field.clear()
 
 	def showChats(self, nameOfUser):
@@ -184,8 +184,8 @@ class MainChatWindow(QMainWindow):
 		self.user_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 
 		global receiverID
-		receiverID = connection.send_query("get_id_by_username", [nameOfUser[0]])
-		chats = connection.send_query("showMessages", [senderID[0][0],receiverID[0][0]])
+		receiverID = connection.sendQuery("get_id_by_username", [nameOfUser[0]])
+		chats = connection.sendQuery("showMessages", [senderID[0][0], receiverID[0][0]])
 
 		self.messages.clear()
 
@@ -197,8 +197,8 @@ class MainChatWindow(QMainWindow):
 					item.setTextAlignment(Qt.AlignRight)
 
 				self.messages.addItem(item)
-				connection.send_query("message_taken", [receiverID[0][0], senderID[0][0]])
-				connection.send_query("message_taken", [senderID[0][0], receiverID[0][0]])
+				connection.sendQuery("message_taken", [receiverID[0][0], senderID[0][0]])
+				connection.sendQuery("message_taken", [senderID[0][0], receiverID[0][0]])
 
 		message_lookup = threading.Thread(target=self.updateWindow)
 		message_lookup.start() 
@@ -208,12 +208,12 @@ class MainChatWindow(QMainWindow):
 			try:
 				time.sleep(3)
 
-				msg = connection.send_query("look_for_message", [receiverID[0][0], senderID[0][0]])
+				msg = connection.sendQuery("look_for_message", [receiverID[0][0], senderID[0][0]])
 				if msg:
 					for messages in msg:
 						self.messages.addItem(str(messages[0]))
-						connection.send_query("message_taken", [receiverID[0][0], senderID[0][0]])
-						retrieved_name = connection.send_query('get_all_by_id', [receiverID[0][0]])[0][1]
+						connection.sendQuery("message_taken", [receiverID[0][0], senderID[0][0]])
+						retrieved_name = connection.sendQuery('get_all_by_id', [receiverID[0][0]])[0][1]
 						Notification.create_notification(f"New Message from {retrieved_name}", str(messages[0]))
 			except Exception as e:
 				print(f"[PROBLEM in updateWindow] {e}")

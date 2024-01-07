@@ -8,74 +8,77 @@
 from Dbconnection import DBConnection
 db = DBConnection()
 
-def database_check(username,email):
+
+def database_check(username, email):
     db.cursor.execute(
-		f'''
+        f'''
         SELECT username, email
         FROM user_info
-		WHERE username = %s
-		OR  email = %s;
+        WHERE username = %s
+        OR  email = %s;
         ''', (username, email)
     )
     return db.cursor.fetchall()
 
+
 def valid_login(email, password):
     db.cursor.execute(
-		f'''
-		SELECT COUNT(*)
-		FROM user_info
-		WHERE email = %s
-		AND password = %s;
-		''',(email, password)
-        )
+        f'''
+        SELECT COUNT(*)
+        FROM user_info
+        WHERE email = %s
+        AND password = %s;
+        ''', (email, password)
+    )
     result = db.cursor.fetchall()
     if len(result):
         return result
     else:
         return []
 
+
 def create_account(name, username, email, password):
-    
     db.cursor.execute(
         f"""
         INSERT INTO user_info (name, username, email, password)
         VALUES(%s, %s, %s, %s);
         """, (name, username, email, password)
-        )
+    )
     db.connection.commit()
-	
-def fetch_user_search(name,senderID):
-    
+
+
+def fetch_user_search(name, senderID):
     db.cursor.execute(
-	f'''
-	SELECT username
+        f'''
+    SELECT username
     FROM user_info
     WHERE (name LIKE %s
     OR username LIKE %s) AND (NOT id = %s);
-	''', ('%' + name + '%', '%' + name + '%', senderID)
-	)
+    ''', ('%' + name + '%', '%' + name + '%', senderID)
+    )
     return db.cursor.fetchall()
+
 
 def fetch_user(senderID):
-    
     db.cursor.execute(
-	f'''
-	SELECT username
+        f'''
+    SELECT username
     FROM user_info
     WHERE NOT id = %s;
-	''', (senderID,)
-	)
+    ''', (senderID,)
+    )
     return db.cursor.fetchall()
 
-def update_chats(senderID, receiverID ,msg):
-	
+
+def update_chats(senderID, receiverID, msg):
     db.cursor.execute(
         f"""
         INSERT INTO user_chat(sender_id, receiver_id, message, message_date, message_time, is_taken)
         VALUES(%s, %s, %s, CURRENT_DATE(), CURRENT_TIME(), FALSE);
-        """, (senderID, receiverID ,msg)
+        """, (senderID, receiverID, msg)
     )
     db.connection.commit()
+
 
 def get_id_by_email(email):
     db.cursor.execute(
@@ -91,9 +94,8 @@ def get_id_by_email(email):
     else:
         return [(-1,)]
 
-        
-def get_id_by_username(username):
 
+def get_id_by_username(username):
     db.cursor.execute(
         f"""
         SELECT id
@@ -108,18 +110,19 @@ def get_id_by_username(username):
     else:
         return [(-1,)]
 
-def get_all_by_id(id):
+
+def get_all_by_id(user_id):
     db.cursor.execute(
         f"""
         SELECT id, name, username, email
         FROM user_info
         WHERE id = %s;
-        """, (id,)
+        """, (user_id,)
     )
     return db.cursor.fetchall()
-    
 
-def showMessages(senderID,receiverID):
+
+def showMessages(senderID, receiverID):
     db.cursor.execute(
         f"""
         SELECT sender_id, message
@@ -131,7 +134,8 @@ def showMessages(senderID,receiverID):
         """, (senderID, receiverID, receiverID, senderID)
     )
     return db.cursor.fetchall()
-		
+
+
 def look_for_message(receiverId, senderId):
     db.cursor.execute(
         f"""
@@ -141,9 +145,10 @@ def look_for_message(receiverId, senderId):
             AND receiver_id = %s
             AND is_taken = FALSE;
         """, (receiverId, senderId)
-        )
+    )
     return db.cursor.fetchall()
-    	
+
+
 def message_taken(receiverId, senderId):
     db.cursor.execute(
         f"""

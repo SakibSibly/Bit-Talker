@@ -24,7 +24,7 @@ def handle_client(connection, address):
             msg = pickle.loads(connection.recv(msg_length))
             print(f"[QUERY] [{address}] {msg}\n")
             result = ""
-            print(f"[RECEIVED FUNCITON CALL] {msg}\n")
+            print(f"[RECEIVED FUNCTION CALL] {msg}\n")
             try:
                 if msg == [[], []]:
                     pass
@@ -58,6 +58,7 @@ def start():
         thread = threading.Thread(target=handle_client, args=(connection, address))
         thread.start()
         print(f"[ACTIVE CONNECTION] {threading.active_count() - 1}.")
+
 
 def main():
     print(f"[STARTING] The server started on {SERVER}")
