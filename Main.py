@@ -95,6 +95,8 @@ class MainChatWindow(QMainWindow):
 		super(MainChatWindow, self).__init__()
 		uic.loadUi("ui/chatting_window.ui", self)
 
+		self.buttons_list = {}
+
 		self.search_bar.textChanged.connect(lambda: self.searchList(self.search_bar.text()))
 		
 		self.v_spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -112,6 +114,7 @@ class MainChatWindow(QMainWindow):
 		self.actionDelete.triggered.connect(self.gotoAccountDeletion)
 		self.actionExit.triggered.connect(self.terminate)
 		self.actionLogout.triggered.connect(self.logout)
+
 
 		self.show()
 
@@ -161,7 +164,10 @@ class MainChatWindow(QMainWindow):
 			u_name = parts[1]
 			u_name.setText(username[0])
 
-			u_name.clicked.connect(lambda clicked, name=username: self.showChats(name))
+			u_name.setCheckable(True)
+			u_name.setChecked(False)
+			self.buttons_list[u_name] = u_name.isChecked()
+			u_name.clicked.connect(lambda clicked, name=username, btn=u_name: self.showChats(name,btn))
 
 			self.userList_layout.addWidget(user)
 
@@ -201,7 +207,20 @@ class MainChatWindow(QMainWindow):
 			connection.sendQuery("update_chats", [senderID[0][0], receiverID[0][0], self.message_field.text()])
 			self.message_field.clear()
 
-	def showChats(self, nameOfUser):
+	def showChats(self, nameOfUser, button):
+		
+		if self.buttons_list[button]:
+			return
+
+		for key in self.buttons_list:
+			self.buttons_list[key] = False
+
+		button.setCheckable(True)
+		button.setChecked(True)
+
+		self.buttons_list[button] = True
+
+		print(button.isChecked())
 
 		self.user_name.setText(nameOfUser[0])
 		self.user_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
