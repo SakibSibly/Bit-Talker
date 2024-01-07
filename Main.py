@@ -222,8 +222,6 @@ class MainChatWindow(QMainWindow):
 
 		self.buttons_list[button] = True
 
-		print(button.isChecked())
-
 		self.user_name.setText(nameOfUser[0])
 		self.user_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 
