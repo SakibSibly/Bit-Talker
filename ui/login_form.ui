@@ -223,7 +223,8 @@ border : 2px solid  rgb(171, 203, 233);
              <enum>Qt::NoFocus</enum>
             </property>
             <property name="styleSheet">
-             <string notr="true">background: rgb(0, 170, 0);</string>
+             <string notr="true">background: rgb(0, 170, 0);
+width : 120%;</string>
             </property>
             <property name="text">
              <string>Sign Up</string>
@@ -257,7 +258,7 @@ border : 2px solid  rgb(171, 203, 233);
      <x>0</x>
      <y>0</y>
      <width>1184</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menufile">

@@ -38,7 +38,7 @@ font: 12pt &quot;Times New Roman&quot;;
 
 #user_list{
 border: none;
-/*border-right : 1px solid rgb(207, 207, 207);*/
+border-right : 1px solid rgb(207, 207, 207);
 }
 
 #user_list QFrame, name_frame{
@@ -78,6 +78,7 @@ height : 30%;
 font: 12pt &quot;Times New Roman&quot;;
 border-radius : 8px;
 height : 55%;
+border : 1px solid rgb(154, 188, 223);
 }
 
 #send_button{
@@ -302,7 +303,7 @@ padding: 5px;
      <x>0</x>
      <y>0</y>
      <width>1112</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu">
