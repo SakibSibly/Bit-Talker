@@ -133,7 +133,6 @@ class MainChatWindow(QMainWindow):
 		self.actionExit.triggered.connect(self.terminate)
 		self.actionLogout.triggered.connect(self.logout)
 
-
 		self.show()
 
 	def gotoAccountDeletion(self):
@@ -353,6 +352,7 @@ class DeleteAccount(QMainWindow):
 		wid.deleteLater()
 		widgets.setCurrentIndex(2)
 
+
 def main():
 	app = QApplication([])
 
@@ -366,11 +366,7 @@ def main():
 
 	window2 = CreateAccount()
 	widgets.addWidget(window2)
-
-	# win = MainChatWindow()
-	# widgets.addWidget(win)
-
-
+  
 	widgets.show()
 	app.exec_()
 
