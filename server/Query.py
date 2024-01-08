@@ -114,7 +114,7 @@ def update_chats(senderID, receiverID, msg):
     db.cursor.execute(
         f"""
         INSERT INTO user_chat(sender_id, receiver_id, message, message_date, message_time, is_taken)
-        VALUES(%s, %s, %s, CURRENT_DATE(), CONVERT_TZ(CURRENT_TIME(), '+00:00', '+14:00'), FALSE);
+        VALUES(%s, %s, %s, CURRENT_DATE(), CURRENT_TIME(), FALSE);
         """, (senderID, receiverID, msg)
     )
     db.connection.commit()
