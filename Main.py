@@ -24,15 +24,15 @@ def light():
 
 
 months_shortcuts = {
-	'1': 'Jan',
-	'2': 'Feb',
-	'3': 'Mar',
-	'4': 'Apr',
-	'5': 'May',
-	'6': 'Jun',
-	'7': 'Jul',
-	'8': 'Aug',
-	'9': 'Sep',
+	'01': 'Jan',
+	'02': 'Feb',
+	'03': 'Mar',
+	'04': 'Apr',
+	'05': 'May',
+	'06': 'Jun',
+	'07': 'Jul',
+	'08': 'Aug',
+	'09': 'Sep',
 	'10': 'Oct',
 	'11': 'Nov',
 	'12': 'Dec'
@@ -106,8 +106,6 @@ class CreateAccount(QMainWindow):
 			QMessageBox().information(self, "Status", Account.create(name, username, email, password), QMessageBox.Ok)
 		else:
 			QMessageBox().warning(self, "Invalid Credential", confirmation,QMessageBox.Ok)
-
-senderID = [(1,)]
 
 
 class MainChatWindow(QMainWindow):
@@ -223,7 +221,7 @@ class MainChatWindow(QMainWindow):
 		if self.message_field.text():
 			dhaka_timezone = pytz.timezone('Asia/Dhaka')
 			current_time = datetime.now(dhaka_timezone)
-			filtered_time = current_time.strftime('%d %h  %I:%M %p')
+			filtered_time = current_time.strftime('%d %h    %I:%M %p')
 
 			text = self.message_field.text() + "\n" + filtered_time
 
@@ -235,12 +233,12 @@ class MainChatWindow(QMainWindow):
 			self.messages.addItem(item)
 			self.message_field.clear()
 
-	def withTime(self,msg):
-		text = msg[1]
+	def withTime(self, msg):
+		text = msg[1]  # must be string or assumed (original message)
 		filtered_time = str(msg[2]).split(":")
-		date = str(msg[3]).split('-')
-		day = date[2]
-		month = months_shortcuts[date[1][1]]
+		filtered_date = str(msg[3]).split('-')
+		day = filtered_date[2]
+		month = months_shortcuts[filtered_date[1]]
 
 		if (12 - int(filtered_time[0])) == 0:
 			filtered_time = "12:" + filtered_time[1] + " PM"
@@ -249,7 +247,7 @@ class MainChatWindow(QMainWindow):
 		else:
 			filtered_time = filtered_time[0] + ":" + filtered_time[1] + " AM"
 				
-		text = text + "\n" + month + " " + day + "	" + filtered_time
+		text = text + "\n" + month + " " + day + "	" + filtered_time[0] + filtered_time[1] + filtered_time[2]
 
 		return text
 
@@ -297,13 +295,15 @@ class MainChatWindow(QMainWindow):
 				time.sleep(3)
 
 				msg = connection.sendQuery("look_for_message", [receiverID[0][0], senderID[0][0]])
+				print(f"[REQUIRED] {msg}")
 				if msg:
 					for messages in msg:
-						text = self.withTime(msg)
+						text = self.withTime(messages)
 						self.messages.addItem(text)
 						connection.sendQuery("message_taken", [receiverID[0][0], senderID[0][0]])
 						retrieved_name = connection.sendQuery('get_all_by_id', [receiverID[0][0]])[0][1]
-						Notification.createNotification(f"New Message from {retrieved_name}", str(messages[0]))
+						# print(f"[RECEIVED NAME] {retrieved_name}")
+						Notification.createNotification(f"New Message from {retrieved_name}", str(messages[1]))
 			except Exception as e:
 				print(f"[PROBLEM in updateWindow] {e}")
 

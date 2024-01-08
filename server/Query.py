@@ -165,7 +165,7 @@ def get_all_by_id(user_id):
 def showMessages(senderID, receiverID):
     db.cursor.execute(
         f"""
-        SELECT sender_id, message,message_time, message_date
+        SELECT sender_id, message, message_time, message_date
         FROM user_chat
         WHERE
         (sender_id = %s AND receiver_id = %s)
@@ -179,7 +179,7 @@ def showMessages(senderID, receiverID):
 def look_for_message(receiverId, senderId):
     db.cursor.execute(
         f"""
-            SELECT sender_id, message,message_time,message_date
+            SELECT sender_id, message, message_time, message_date
             FROM user_chat
             WHERE sender_id = %s
             AND receiver_id = %s
