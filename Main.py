@@ -115,7 +115,7 @@ class MainChatWindow(QMainWindow):
 
 		self.buttons_list = {}
 
-		self.search_bar.textChanged.connect(lambda: self.userList(self.search_bar.text()))
+		self.search_bar.textChanged.connect(lambda: self.searchList(self.search_bar.text()))
 		
 		self.v_spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 		self.userList_layout = QVBoxLayout(self.user_list)
@@ -166,6 +166,56 @@ class MainChatWindow(QMainWindow):
 		widgets.removeWidget(wid)
 		wid.deleteLater()
 		widgets.setCurrentIndex(0)
+
+	def userList(self):
+
+		names = connection.sendQuery("fetch_user", [senderID[0][0]])
+
+		for username in names:
+			user = uic.loadUi("ui//user.ui")
+			parts = user.findChildren(QPushButton)
+
+			img = parts[0]
+			img.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
+			
+			u_name = parts[1]
+			u_name.setText(username[0])
+
+			u_name.setCheckable(True)
+			u_name.setChecked(False)
+			self.buttons_list[u_name] = u_name.isChecked()
+			u_name.clicked.connect(lambda clicked, name=username, btn=u_name: self.showChats(name,btn))
+
+			self.userList_layout.addWidget(user)
+
+		self.userList_layout.addItem(self.v_spacer)
+
+	def searchList(self, target_name):
+
+		for widget in self.user_list.findChildren(QWidget):
+			widget.deleteLater()
+
+		self.userList_layout.removeItem(self.v_spacer)
+
+		names = connection.sendQuery("fetch_user_search", [target_name, senderID[0][0]])
+
+		for username in names:
+			user = uic.loadUi("ui//user.ui")
+			parts = user.findChildren(QPushButton)
+
+			img = parts[0]
+			img.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
+			
+			u_name = parts[1]
+			u_name.setText(username[0])
+
+			u_name.setCheckable(True)
+			u_name.setChecked(False)
+			self.buttons_list[u_name] = u_name.isChecked()
+			u_name.clicked.connect(lambda clicked, name=username, btn=u_name: self.showChats(name,btn))			
+			self.userList_layout.addWidget(user)
+
+		self.userList_layout.addItem(self.v_spacer)
 
 	def send(self):
 		if self.message_field.text():
