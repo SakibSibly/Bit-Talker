@@ -244,7 +244,9 @@ padding: 5px;
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="styleSheet">
-          <string notr="true"/>
+          <string notr="true">QListWidget::item{
+height : 60%;
+}</string>
          </property>
         </widget>
        </item>

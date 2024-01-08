@@ -7,6 +7,8 @@ from client.Client import Client
 import hashlib
 import threading
 import time
+from datetime import datetime
+import pytz
 
 
 connection = Client()
@@ -19,6 +21,21 @@ def dark():
 
 def light():
 	widgets.setStyleSheet("")
+
+months_shortcuts = {
+    '1': 'Jan',
+    '2': 'Feb',
+    '3': 'Mar',
+    '4': 'Apr',
+    '5': 'May',
+    '6': 'Jun',
+    '7': 'Jul',
+    '8': 'Aug',
+    '9': 'Sep',
+    '10': 'Oct',
+    '11': 'Nov',
+    '12': 'Dec'
+}
 
 
 class LoginForm(QMainWindow):
@@ -89,6 +106,7 @@ class CreateAccount(QMainWindow):
 		else:
 			QMessageBox().warning(self, "Invalid Credential", confirmation,QMessageBox.Ok)
 
+senderID = [(1,)]
 
 class MainChatWindow(QMainWindow):
 	def __init__(self):
@@ -201,13 +219,37 @@ class MainChatWindow(QMainWindow):
 
 	def send(self):
 		if self.message_field.text():
-			item = QListWidgetItem(self.message_field.text())
+			dhaka_timezone = pytz.timezone('Asia/Dhaka')
+			current_time = datetime.now(dhaka_timezone)
+			time = current_time.strftime('%d %h    %I:%M %p')
+
+			text = self.message_field.text() + "\n" + time
+
+			item = QListWidgetItem(text)
 			item.setTextAlignment(Qt.AlignRight)
-			
-			self.messages.addItem(item)
 
 			connection.sendQuery("update_chats", [senderID[0][0], receiverID[0][0], self.message_field.text()])
+			
+			self.messages.addItem(item)
 			self.message_field.clear()
+
+	def withTime(self,msg):
+		text = msg[1]
+		time = str(msg[2]).split(":")
+		date = str(msg[3]).split('-')
+		day = date[2]
+		month = months_shortcuts[date[1][1]]
+
+		if (12 - int(time[0])) == 0:
+			time = "12:" + time[1] + " PM"
+		elif (12 - int(time[0])) < 0:
+			time = str(int(time[0]) - 12) + ":" + time[1] + " PM"
+		else:
+			time = time[0] + ":" + time[1] + " AM"
+				
+		text = text + "\n" + month + " " + day + "	" + time
+
+		return text
 
 	def showChats(self, nameOfUser, button):
 		
@@ -233,7 +275,10 @@ class MainChatWindow(QMainWindow):
 
 		if chats:
 			for msg in chats:
-				item = QListWidgetItem(msg[1])
+
+				text = self.withTime(msg)
+
+				item = QListWidgetItem(text)
 
 				if msg[0] == senderID[0][0]:
 					item.setTextAlignment(Qt.AlignRight)
@@ -252,7 +297,8 @@ class MainChatWindow(QMainWindow):
 				msg = connection.sendQuery("look_for_message", [receiverID[0][0], senderID[0][0]])
 				if msg:
 					for messages in msg:
-						self.messages.addItem(str(messages[0]))
+						text = self.withTime(msg)
+						self.messages.addItem(text)
 						connection.sendQuery("message_taken", [receiverID[0][0], senderID[0][0]])
 						retrieved_name = connection.sendQuery('get_all_by_id', [receiverID[0][0]])[0][1]
 						Notification.createNotification(f"New Message from {retrieved_name}", str(messages[0]))
@@ -320,7 +366,7 @@ def main():
 
 	window2 = CreateAccount()
 	widgets.addWidget(window2)
-
+  
 	widgets.show()
 	app.exec_()
 

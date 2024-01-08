@@ -114,7 +114,7 @@ def update_chats(senderID, receiverID, msg):
     db.cursor.execute(
         f"""
         INSERT INTO user_chat(sender_id, receiver_id, message, message_date, message_time, is_taken)
-        VALUES(%s, %s, %s, CURRENT_DATE(), CURRENT_TIME(), FALSE);
+        VALUES(%s, %s, %s, CURRENT_DATE(), CONVERT_TZ(CURRENT_TIME(), '+00:00', '+14:00'), FALSE);
         """, (senderID, receiverID, msg)
     )
     db.connection.commit()
@@ -165,7 +165,7 @@ def get_all_by_id(user_id):
 def showMessages(senderID, receiverID):
     db.cursor.execute(
         f"""
-        SELECT sender_id, message
+        SELECT sender_id, message,message_time, message_date
         FROM user_chat
         WHERE
         (sender_id = %s AND receiver_id = %s)
@@ -179,7 +179,7 @@ def showMessages(senderID, receiverID):
 def look_for_message(receiverId, senderId):
     db.cursor.execute(
         f"""
-            SELECT message
+            SELECT sender_id, message,message_time,message_date
             FROM user_chat
             WHERE sender_id = %s
             AND receiver_id = %s
