@@ -22,19 +22,20 @@ def dark():
 def light():
 	widgets.setStyleSheet("")
 
+
 months_shortcuts = {
-    '1': 'Jan',
-    '2': 'Feb',
-    '3': 'Mar',
-    '4': 'Apr',
-    '5': 'May',
-    '6': 'Jun',
-    '7': 'Jul',
-    '8': 'Aug',
-    '9': 'Sep',
-    '10': 'Oct',
-    '11': 'Nov',
-    '12': 'Dec'
+	'1': 'Jan',
+	'2': 'Feb',
+	'3': 'Mar',
+	'4': 'Apr',
+	'5': 'May',
+	'6': 'Jun',
+	'7': 'Jul',
+	'8': 'Aug',
+	'9': 'Sep',
+	'10': 'Oct',
+	'11': 'Nov',
+	'12': 'Dec'
 }
 
 
@@ -107,6 +108,7 @@ class CreateAccount(QMainWindow):
 			QMessageBox().warning(self, "Invalid Credential", confirmation,QMessageBox.Ok)
 
 senderID = [(1,)]
+
 
 class MainChatWindow(QMainWindow):
 	def __init__(self):
@@ -221,9 +223,9 @@ class MainChatWindow(QMainWindow):
 		if self.message_field.text():
 			dhaka_timezone = pytz.timezone('Asia/Dhaka')
 			current_time = datetime.now(dhaka_timezone)
-			time = current_time.strftime('%d %h    %I:%M %p')
+			filtered_time = current_time.strftime('%d %h  %I:%M %p')
 
-			text = self.message_field.text() + "\n" + time
+			text = self.message_field.text() + "\n" + filtered_time
 
 			item = QListWidgetItem(text)
 			item.setTextAlignment(Qt.AlignRight)
@@ -235,23 +237,23 @@ class MainChatWindow(QMainWindow):
 
 	def withTime(self,msg):
 		text = msg[1]
-		time = str(msg[2]).split(":")
+		filtered_time = str(msg[2]).split(":")
 		date = str(msg[3]).split('-')
 		day = date[2]
 		month = months_shortcuts[date[1][1]]
 
-		if (12 - int(time[0])) == 0:
-			time = "12:" + time[1] + " PM"
-		elif (12 - int(time[0])) < 0:
-			time = str(int(time[0]) - 12) + ":" + time[1] + " PM"
+		if (12 - int(filtered_time[0])) == 0:
+			filtered_time = "12:" + filtered_time[1] + " PM"
+		elif (12 - int(filtered_time[0])) < 0:
+			filtered_time = str(int(filtered_time[0]) - 12) + ":" + filtered_time[1] + " PM"
 		else:
-			time = time[0] + ":" + time[1] + " AM"
+			filtered_time = filtered_time[0] + ":" + filtered_time[1] + " AM"
 				
-		text = text + "\n" + month + " " + day + "	" + time
+		text = text + "\n" + month + " " + day + "	" + filtered_time
 
 		return text
 
-	def showChats(self, nameOfUser, button):
+	def showChats(self, name_of_user, button):
 		
 		if self.buttons_list[button]:
 			return
@@ -264,11 +266,11 @@ class MainChatWindow(QMainWindow):
 
 		self.buttons_list[button] = True
 
-		self.user_name.setText(nameOfUser[0])
+		self.user_name.setText(name_of_user[0])
 		self.user_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 
 		global receiverID
-		receiverID = connection.sendQuery("get_id_by_username", [nameOfUser[0]])
+		receiverID = connection.sendQuery("get_id_by_username", [name_of_user[0]])
 		chats = connection.sendQuery("showMessages", [senderID[0][0], receiverID[0][0]])
 
 		self.messages.clear()
@@ -366,7 +368,7 @@ def main():
 
 	window2 = CreateAccount()
 	widgets.addWidget(window2)
-  
+
 	widgets.show()
 	app.exec_()
 
