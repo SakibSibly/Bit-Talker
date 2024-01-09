@@ -12,7 +12,7 @@ import pytz
 
 
 connection = Client()
-thread_life = True
+thread_life = True  # For controlling the thread in realtime
 
 
 def dark():
@@ -23,6 +23,7 @@ def light():
 	widgets.setStyleSheet("")
 
 
+# Month substitution dictionary
 months_shortcuts = {
 	'01': 'Jan',
 	'02': 'Feb',
@@ -64,7 +65,14 @@ class LoginForm(QMainWindow):
 		else:
 			global senderID
 			senderID = connection.sendQuery("get_id_by_email", [email])
-			
+
+			# Handling the post logout phase of showing the previous user's messages
+			try:
+				global receiverID
+				receiverID = [(-1,)]
+			except Exception as e:
+				print(f"[PROBLEM in login] {e}")
+
 			self.email_field.clear()
 			self.password_field.clear()
 			self.email_field.setFocus()
@@ -227,14 +235,18 @@ class MainChatWindow(QMainWindow):
 			item = QListWidgetItem(text)
 			item.setTextAlignment(Qt.AlignRight)
 
-			try:
-				connection.sendQuery("update_chats", [senderID[0][0], receiverID[0][0], self.message_field.text()])
-				self.messages.addItem(item)
-				self.message_field.clear()
+			# Check if the receiver is selected or not
+			if receiverID[0][0] != -1:
+				try:
+					connection.sendQuery("update_chats", [senderID[0][0], receiverID[0][0], self.message_field.text()])
+					self.messages.addItem(item)
+					self.message_field.clear()
 
-			except Exception as e:
+				except Exception as e:
+					self.message_field.clear()
+					print(f"[PROBLEM in send] {e}")
+			else:
 				self.message_field.clear()
-				print(f"[PROBLEM in send] {e}")
 
 	def withTime(self, msg):
 		text = msg[1]
@@ -279,9 +291,7 @@ class MainChatWindow(QMainWindow):
 
 		if chats:
 			for msg in chats:
-
 				text = self.withTime(msg)
-
 				item = QListWidgetItem(text)
 
 				if msg[0] == senderID[0][0]:
@@ -298,7 +308,6 @@ class MainChatWindow(QMainWindow):
 		while thread_life:
 			try:
 				time.sleep(3)
-
 				msg = connection.sendQuery("look_for_message", [receiverID[0][0], senderID[0][0]])
 				if msg:
 					for messages in msg:
