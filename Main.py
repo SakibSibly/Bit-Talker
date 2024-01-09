@@ -75,7 +75,7 @@ class LoginForm(QMainWindow):
 			window3 = MainChatWindow()
 			widgets.addWidget(window3)
 			widgets.setCurrentIndex(2)
-			
+
 
 class CreateAccount(QMainWindow):
 
@@ -116,11 +116,12 @@ class MainChatWindow(QMainWindow):
 		self.buttons_list = {}
 
 		self.search_bar.textChanged.connect(lambda: self.searchList(self.search_bar.text()))
-		
+
 		self.v_spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 		self.userList_layout = QVBoxLayout(self.user_list)
 		self.userList()
 
+		print(f"[DEBUG VAR THREAD_LIFE] {thread_life}")
 		message_lookup = threading.Thread(target=self.updateWindow)
 		message_lookup.start()
 
@@ -184,7 +185,7 @@ class MainChatWindow(QMainWindow):
 			u_name.setCheckable(True)
 			u_name.setChecked(False)
 			self.buttons_list[u_name] = u_name.isChecked()
-			u_name.clicked.connect(lambda clicked, name=username, btn=u_name: self.showChats(name,btn))
+			u_name.clicked.connect(lambda clicked, name=username, btn=u_name: self.showChats(name, btn))
 
 			self.userList_layout.addWidget(user)
 
@@ -286,6 +287,7 @@ class MainChatWindow(QMainWindow):
 				self.messages.addItem(item)
 				connection.sendQuery("message_taken", [receiverID[0][0], senderID[0][0]])
 				connection.sendQuery("message_taken", [senderID[0][0], receiverID[0][0]])
+				connection.sendQuery("message_notified", [senderID[0][0]])
 	
 	def updateWindow(self):
 		global thread_life
@@ -300,10 +302,18 @@ class MainChatWindow(QMainWindow):
 						text = self.withTime(messages)
 						self.messages.addItem(text)
 						connection.sendQuery("message_taken", [receiverID[0][0], senderID[0][0]])
-						retrieved_name = connection.sendQuery('get_all_by_id', [receiverID[0][0]])[0][1]
-						Notification.createNotification(f"New Message from {retrieved_name}", str(messages[1]))
+
 			except Exception as e:
 				print(f"[PROBLEM in updateWindow] {e}")
+
+			finally:
+				# Notification Feature
+				confirmation = connection.sendQuery("look_for_any_incoming_message", [senderID[0][0]])
+				if confirmation:
+					for row in confirmation:
+						retrieved_name = connection.sendQuery('get_all_by_id', [row[0]])[0][1]
+						Notification.createNotification(f"New Message from {retrieved_name}", row[1])
+						connection.sendQuery("message_notified", [senderID[0][0]])
 
 
 class DeleteAccount(QMainWindow):

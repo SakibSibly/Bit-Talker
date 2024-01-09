@@ -110,11 +110,12 @@ def fetch_user(senderID):
     return db.cursor.fetchall()
 
 
+# one user has sent a message to another user
 def update_chats(senderID, receiverID, msg):
     db.cursor.execute(
         f"""
-        INSERT INTO user_chat(sender_id, receiver_id, message, message_date, message_time, is_taken)
-        VALUES(%s, %s, %s, CURRENT_DATE(), CURRENT_TIME(), FALSE);
+        INSERT INTO user_chat(sender_id, receiver_id, message, message_date, message_time, is_taken, is_notified)
+        VALUES(%s, %s, %s, CURRENT_DATE(), CURRENT_TIME(), FALSE, FALSE);
         """, (senderID, receiverID, msg)
     )
     db.connection.commit()
@@ -193,9 +194,32 @@ def message_taken(receiverId, senderId):
     db.cursor.execute(
         f"""
             UPDATE user_chat
-            SET is_taken = TRUE
+            SET is_taken = TRUE, is_notified = TRUE
             WHERE sender_id = %s
             AND receiver_id = %s;
         """, (receiverId, senderId)
+    )
+    db.connection.commit()
+
+
+def look_for_any_incoming_message(senderId):
+    db.cursor.execute(
+        f"""
+            SELECT sender_id, message
+            FROM user_chat
+            WHERE receiver_id = %s
+            AND is_notified = FALSE;
+        """, (senderId,)
+    )
+    return db.cursor.fetchall()
+
+
+def message_notified(senderId):
+    db.cursor.execute(
+        f"""
+            UPDATE user_chat
+            SET is_notified = TRUE
+            WHERE receiver_id = %s;
+        """, (senderId,)
     )
     db.connection.commit()
