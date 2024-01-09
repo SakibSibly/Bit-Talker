@@ -186,13 +186,13 @@ class MainChatWindow(QMainWindow):
 			img = parts[0]
 			img.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 			
-			u_name = parts[1]
-			u_name.setText(username[0])
+			username_field = parts[1]
+			username_field.setText(username[0])
 
-			u_name.setCheckable(True)
-			u_name.setChecked(False)
-			self.buttons_list[u_name] = u_name.isChecked()
-			u_name.clicked.connect(lambda clicked, name=username, btn=u_name: self.showChats(name, btn))
+			username_field.setCheckable(True)
+			username_field.setChecked(False)
+			self.buttons_list[username_field] = username_field.isChecked()
+			username_field.clicked.connect(lambda clicked, name=username, btn=username_field: self.showChats(name, btn))
 
 			self.userList_layout.addWidget(user)
 
