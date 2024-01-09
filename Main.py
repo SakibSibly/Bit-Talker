@@ -212,7 +212,7 @@ class MainChatWindow(QMainWindow):
 			u_name.setCheckable(True)
 			u_name.setChecked(False)
 			self.buttons_list[u_name] = u_name.isChecked()
-			u_name.clicked.connect(lambda clicked, name=username, btn=u_name: self.showChats(name,btn))			
+			u_name.clicked.connect(lambda clicked, name=username, btn=u_name: self.showChats(name, btn))
 			self.userList_layout.addWidget(user)
 
 		self.userList_layout.addItem(self.v_spacer)
@@ -227,10 +227,14 @@ class MainChatWindow(QMainWindow):
 			item = QListWidgetItem(text)
 			item.setTextAlignment(Qt.AlignRight)
 
-			connection.sendQuery("update_chats", [senderID[0][0], receiverID[0][0], self.message_field.text()])
-			
-			self.messages.addItem(item)
-			self.message_field.clear()
+			try:
+				connection.sendQuery("update_chats", [senderID[0][0], receiverID[0][0], self.message_field.text()])
+				self.messages.addItem(item)
+				self.message_field.clear()
+
+			except Exception as e:
+				self.message_field.clear()
+				print(f"[PROBLEM in send] {e}")
 
 	def withTime(self, msg):
 		text = msg[1]
