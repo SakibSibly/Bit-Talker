@@ -19,7 +19,7 @@ def handle_client(connection, address):
     
     connected = True
     while connected:
-        msg_length = connection.recv(RESULT_HEADER).decode()
+        msg_length = connection.recv(RESULT_HEADER).decode("latin-1")
         if msg_length:
             msg_length = int(msg_length)
             msg = pickle.loads(connection.recv(msg_length))
@@ -35,7 +35,7 @@ def handle_client(connection, address):
                     result = globals()[msg[0]](*msg[1])
                 
                 result = pickle.dumps(result)
-                result_length = str(len(result)).encode()
+                result_length = str(len(result)).encode("latin-1")
                 result_length += b' ' * (RESULT_HEADER - len(result_length))
                 connection.send(result_length)
                 connection.send(result)
