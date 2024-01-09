@@ -16,6 +16,7 @@ CREATE TABLE user_chat (
     message_date DATE,
     message_time TIME,
     is_taken BOOLEAN,
+    is_notified BOOLEAN,
     FOREIGN KEY (sender_id) REFERENCES user_info(id),
     FOREIGN KEY (receiver_id) REFERENCES user_info(id)
 );
