@@ -121,7 +121,6 @@ class MainChatWindow(QMainWindow):
 		self.userList_layout = QVBoxLayout(self.user_list)
 		self.userList()
 
-		print(f"[DEBUG VAR THREAD_LIFE] {thread_life}")
 		message_lookup = threading.Thread(target=self.updateWindow)
 		message_lookup.start()
 
