@@ -338,6 +338,7 @@ class DeleteAccount(QMainWindow):
 		self.cancel_button.clicked.connect(self.backToMainChatWindow)
 		self.actionDarkMode_4.triggered.connect(dark)
 		self.actionLightMode_4.triggered.connect(light)
+		self.actionQuit.triggered.connect(self.terminate)
 
 		self.show()
 
@@ -374,6 +375,10 @@ class DeleteAccount(QMainWindow):
 		wid.deleteLater()
 		widgets.setCurrentIndex(2)
 
+	def terminate(self):
+		global thread_life
+		thread_life = False
+		exit()
 
 def main():
 	app = QApplication([])
