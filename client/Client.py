@@ -27,7 +27,7 @@ class Client:
             return result  # result is a list
         
         except Exception as e:
-            print(f"[PROBLEM] {e}")
+            print(f"[PROBLEM in Client Class] {e}")
             return [(0,)]
             # Can create problem if connection is lost from the server
-            # then 0 will be shown to the receivers side as a sent message
+            # then 0 will be shown to the receivers side as sent message
