@@ -102,7 +102,7 @@ def fetch_user_search(name, senderID):
 def fetch_user(senderID):
     db.cursor.execute(
         f'''
-    SELECT username
+    SELECT username, name
     FROM user_info
     WHERE NOT id = %s;
     ''', (senderID,)

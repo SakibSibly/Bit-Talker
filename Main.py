@@ -187,11 +187,14 @@ class MainChatWindow(QMainWindow):
 			img.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 			
 			username_field = parts[1]
-			username_field.setText(username[0])
+			username_field.setText(username[1])
 
 			username_field.setCheckable(True)
 			username_field.setChecked(False)
 			self.buttons_list[username_field] = username_field.isChecked()
+			print(f"[DEBUG username] {username}")
+			print(f"[DEBUG username_field] {username_field}")
+			print(f"[DEBUG parts] {parts}")
 			username_field.clicked.connect(lambda clicked, name=username, btn=username_field: self.showChats(name, btn))
 
 			self.userList_layout.addWidget(user)
@@ -215,7 +218,7 @@ class MainChatWindow(QMainWindow):
 			img.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
 			
 			u_name = parts[1]
-			u_name.setText(username[0])
+			u_name.setText(username[1])
 
 			u_name.setCheckable(True)
 			u_name.setChecked(False)
