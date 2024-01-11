@@ -16,12 +16,12 @@ class Client:
     def sendQuery(self, function_name, arguments):
         try:
             sending_obj = pickle.dumps([function_name, arguments])
-            sending_obj_length = str(len(sending_obj)).encode("latin-1")
+            sending_obj_length = str(len(sending_obj)).encode()
             sending_obj_length += b' ' * (RESULT_HEADER - len(sending_obj_length))
             client.send(sending_obj_length)
             client.send(sending_obj)
             
-            result_length = int(client.recv(RESULT_HEADER).decode("latin-1"))
+            result_length = int(client.recv(RESULT_HEADER).decode())
             result = pickle.loads(client.recv(result_length))
 
             return result  # result is a list

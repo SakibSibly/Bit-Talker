@@ -12,5 +12,6 @@ class DBConnection:
         )
         cursor = connection.cursor()
 
-    except:
+    except Exception as e:
         print("BitTalker can't be reached right now!")
+        print(f"[PROBLEM in Dbconnection] {e}")
