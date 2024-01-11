@@ -90,7 +90,7 @@ def delete_account(email):
 def fetch_user_search(name, senderID):
     db.cursor.execute(
         f'''
-    SELECT username
+    SELECT username, name
     FROM user_info
     WHERE (name LIKE %s
     OR username LIKE %s) AND (NOT id = %s);
