@@ -7,6 +7,7 @@
 
 from Dbconnection import DBConnection
 db = DBConnection()
+ULTIMATE_KEY = "khuboi_SHOKTI_shali_password"
 
 
 def database_check(username, email):
@@ -115,8 +116,8 @@ def update_chats(senderID, receiverID, msg):
     db.cursor.execute(
         f"""
         INSERT INTO user_chat(sender_id, receiver_id, message, message_date, message_time, is_taken, is_notified)
-        VALUES(%s, %s, %s, CURRENT_DATE(), CURRENT_TIME(), FALSE, FALSE);
-        """, (senderID, receiverID, msg)
+        VALUES(%s, %s, AES_ENCRYPT(%s, %s), CURRENT_DATE(), CURRENT_TIME(), FALSE, FALSE);
+        """, (senderID, receiverID, msg, ULTIMATE_KEY)
     )
     db.connection.commit()
 
@@ -166,13 +167,13 @@ def get_all_by_id(user_id):
 def showMessages(senderID, receiverID):
     db.cursor.execute(
         f"""
-        SELECT sender_id, message, message_time, message_date
+        SELECT sender_id, CAST(AES_DECRYPT(message, %s) AS CHAR) AS message, message_time, message_date
         FROM user_chat
         WHERE
         (sender_id = %s AND receiver_id = %s)
         OR (sender_id = %s AND receiver_id = %s)
         ORDER BY message_date ASC, message_time ASC;
-        """, (senderID, receiverID, receiverID, senderID)
+        """, (ULTIMATE_KEY, senderID, receiverID, receiverID, senderID)
     )
     return db.cursor.fetchall()
 
@@ -180,12 +181,12 @@ def showMessages(senderID, receiverID):
 def look_for_message(receiverId, senderId):
     db.cursor.execute(
         f"""
-            SELECT sender_id, message, message_time, message_date
+            SELECT sender_id, CAST(AES_DECRYPT(message, %s) AS CHAR) AS message, message_time, message_date
             FROM user_chat
             WHERE sender_id = %s
             AND receiver_id = %s
             AND is_taken = FALSE;
-        """, (receiverId, senderId)
+        """, (ULTIMATE_KEY, receiverId, senderId)
     )
     return db.cursor.fetchall()
 
@@ -205,11 +206,11 @@ def message_taken(receiverId, senderId):
 def look_for_any_incoming_message(senderId):
     db.cursor.execute(
         f"""
-            SELECT sender_id, message
+            SELECT sender_id, CAST(AES_DECRYPT(message, %s) AS CHAR) AS message
             FROM user_chat
             WHERE receiver_id = %s
             AND is_notified = FALSE;
-        """, (senderId,)
+        """, (ULTIMATE_KEY, senderId,)
     )
     return db.cursor.fetchall()
 

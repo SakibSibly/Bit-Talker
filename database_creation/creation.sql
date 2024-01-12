@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 CREATE TABLE user_chat (
 	sender_id INT,
     receiver_id INT,
-    message VARCHAR(500),
+    message BLOB,
     message_date DATE,
     message_time TIME,
     is_taken BOOLEAN,
