@@ -192,9 +192,7 @@ class MainChatWindow(QMainWindow):
 			username_field.setCheckable(True)
 			username_field.setChecked(False)
 			self.buttons_list[username_field] = username_field.isChecked()
-			print(f"[DEBUG username] {username}")
-			print(f"[DEBUG username_field] {username_field}")
-			print(f"[DEBUG parts] {parts}")
+
 			username_field.clicked.connect(lambda clicked, name=username, btn=username_field: self.showChats(name, btn))
 
 			self.userList_layout.addWidget(user)
