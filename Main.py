@@ -9,10 +9,25 @@ import threading
 import time
 from datetime import datetime
 import pytz
+import sys
+import os
 
 
 connection = Client()
 thread_life = True  # For controlling the thread in realtime
+
+
+# Resource Link:
+# https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
+def resource_path(relative_path):
+	""" Get absolute path to resource, works for dev and for PyInstaller """
+	try:
+		# PyInstaller creates a temp folder and stores path in _MEIPASS
+		base_path = sys._MEIPASS2
+	except Exception:
+		base_path = os.path.abspath(".")
+
+	return os.path.join(base_path, relative_path)
 
 
 def dark():
@@ -43,18 +58,22 @@ months_shortcuts = {
 class LoginForm(QMainWindow):
 	def __init__(self):
 		super(LoginForm, self).__init__()
-		uic.loadUi("ui/login_form.ui", self)
+		uic.loadUi(resource_path("ui\\login_form.ui"), self)
 
 		self.login_button.clicked.connect(self.login)
 		self.signup_button.clicked.connect(lambda: widgets.setCurrentIndex(1))
 		self.actionDarkMode.triggered.connect(dark)
 		self.actionLightMode.triggered.connect(light)
-		self.actionQuit.triggered.connect(exit)
-		self.bt_image.setStyleSheet("image : url(pictures/main_icon.png) no-repeat center;")
+		self.actionQuit.triggered.connect(self.terminate)
+		self.target_path = resource_path("pictures\\main_icon.png").replace("\\", "/")
+		self.bt_image.setStyleSheet(f"image : url({self.target_path}) no-repeat center;")
 		self.show()
 
+	def terminate(self):
+		exit()
+
 	def login(self):
-		
+
 		email = str(self.email_field.text()).lower().strip()
 		password = hashlib.sha256(str(self.password_field.text()).encode()).hexdigest()
 
@@ -89,15 +108,18 @@ class CreateAccount(QMainWindow):
 
 	def __init__(self):
 		super(CreateAccount, self).__init__()
-		uic.loadUi("ui/create_account.ui", self)
+		uic.loadUi(resource_path("ui\\create_account.ui"), self)
 
 		self.create_and_login_button.clicked.connect(self.createAccount)
 		self.cancel_button.clicked.connect(lambda: widgets.setCurrentIndex(0))
-		self.actionQuit.triggered.connect(exit)
+		self.actionQuit.triggered.connect(self.terminate)
 		self.actionDarkMode_2.triggered.connect(dark)
 		self.actionLightMode_2.triggered.connect(light)
-		
+
 		self.show()
+
+	def terminate(self):
+		exit()
 
 	def createAccount(self):
 		initial_length = len(str(self.password_field.text()))
@@ -119,7 +141,7 @@ class CreateAccount(QMainWindow):
 class MainChatWindow(QMainWindow):
 	def __init__(self):
 		super(MainChatWindow, self).__init__()
-		uic.loadUi("ui/chatting_window.ui", self)
+		uic.loadUi(resource_path("ui\\chatting_window.ui"), self)
 
 		self.buttons_list = {}
 
@@ -154,9 +176,10 @@ class MainChatWindow(QMainWindow):
 		exit()
 
 	def gotoProfile(self):
-		win = uic.loadUi("ui/profile.ui")
-		win.profile_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
-		
+		win = uic.loadUi(resource_path("ui\\profile.ui"))
+		target_path = resource_path("pictures\\user.png").replace("\\", "/")
+		win.profile_photo.setStyleSheet(f"background : url({target_path}) no-repeat center;")
+
 		user_info = connection.sendQuery("get_all_by_id", [senderID[0][0]])
 
 		win.profile_name.setText(user_info[0][1])
@@ -164,7 +187,7 @@ class MainChatWindow(QMainWindow):
 		win.profile_email.setText(user_info[0][3])
 		win.profile_id.setText(str(user_info[0][0]))
 		win.setWindowTitle("BitTalker")
-		win.setWindowIcon(QIcon("pictures/main_icon.png"))
+		win.setWindowIcon(QIcon(resource_path("pictures\\main_icon.png")))
 		win.exec_()
 
 	def logout(self):
@@ -180,12 +203,13 @@ class MainChatWindow(QMainWindow):
 		names = connection.sendQuery("fetch_user", [senderID[0][0]])
 
 		for username in names:
-			user = uic.loadUi("ui//user.ui")
+			user = uic.loadUi(resource_path("ui\\user.ui"))
 			parts = user.findChildren(QPushButton)
 
 			img = parts[0]
-			img.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
-			
+			target_path = resource_path("pictures\\user.png").replace("\\", "/")
+			img.setStyleSheet(f"background : url({target_path}) no-repeat center;")
+
 			username_field = parts[1]
 			username_field.setText(username[1])
 
@@ -209,12 +233,13 @@ class MainChatWindow(QMainWindow):
 		names = connection.sendQuery("fetch_user_search", [target_name, senderID[0][0]])
 
 		for username in names:
-			user = uic.loadUi("ui//user.ui")
+			user = uic.loadUi(resource_path("ui\\user.ui"))
 			parts = user.findChildren(QPushButton)
 
 			img = parts[0]
-			img.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
-			
+			target_path = resource_path("pictures\\user.png").replace("\\", "/")
+			img.setStyleSheet(f"background : url({target_path}) no-repeat center;")
+
 			u_name = parts[1]
 			u_name.setText(username[1])
 
@@ -264,12 +289,12 @@ class MainChatWindow(QMainWindow):
 			result = filtered_time[0] + ":" + filtered_time[1] + " AM"
 		else:  # 10:10
 			result = str(int(filtered_time[0]) - 12) + ":" + filtered_time[1] + " PM"
-				
+
 		text += "\n" + month + " " + day + "  " + result
 		return text
 
 	def showChats(self, name_of_user, button):
-		
+
 		if self.buttons_list[button]:
 			return
 
@@ -282,7 +307,8 @@ class MainChatWindow(QMainWindow):
 		self.buttons_list[button] = True
 
 		self.user_name.setText(name_of_user[0])
-		self.user_photo.setStyleSheet("background : url(pictures/user.png) no-repeat center;")
+		target_path = resource_path("pictures\\user.png").replace("\\", "/")
+		self.user_photo.setStyleSheet(f"background : url({target_path}) no-repeat center;")
 
 		global receiverID
 		receiverID = connection.sendQuery("get_id_by_username", [name_of_user[0]])
@@ -302,7 +328,7 @@ class MainChatWindow(QMainWindow):
 				connection.sendQuery("message_taken", [receiverID[0][0], senderID[0][0]])
 				connection.sendQuery("message_taken", [senderID[0][0], receiverID[0][0]])
 				connection.sendQuery("message_notified", [senderID[0][0]])
-	
+
 	def updateWindow(self):
 		global thread_life
 
@@ -332,9 +358,10 @@ class MainChatWindow(QMainWindow):
 class DeleteAccount(QMainWindow):
 	def __init__(self):
 		super(DeleteAccount, self).__init__()
-		uic.loadUi("ui/delete_account.ui", self)
+		uic.loadUi(resource_path("ui\\delete_account.ui"), self)
 
-		self.bt_image.setStyleSheet("image : url(pictures/main_icon.png) no-repeat center;")
+		self.target_path = resource_path("pictures\\main_icon.png").replace("\\", "/")
+		self.bt_image.setStyleSheet(f"image : url({self.target_path}) no-repeat center;")
 		self.delete_button.clicked.connect(self.deleteUser)
 		self.cancel_button.clicked.connect(self.backToMainChatWindow)
 		self.actionDarkMode_4.triggered.connect(dark)
@@ -387,7 +414,7 @@ def main():
 	global widgets
 	widgets = QStackedWidget()
 	widgets.setWindowTitle("BitTalker")
-	widgets.setWindowIcon(QIcon("pictures/main_icon.png"))
+	widgets.setWindowIcon(QIcon(resource_path("pictures\\main_icon.png")))
 
 	window1 = LoginForm()
 	widgets.addWidget(window1)
