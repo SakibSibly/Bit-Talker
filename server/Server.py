@@ -7,7 +7,8 @@ from Query import *
 RESULT_HEADER = 2048
 PORT = 5050
 # SERVER = "192.168.0.104"
-SERVER = "192.168.1.16"
+# SERVER = "192.168.1.16"
+SERVER = "192.168.154.129"  # (Local Mobile Hotspot)
 ADDR = (SERVER, PORT)
 
 server = socket.socket()
