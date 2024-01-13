@@ -2,8 +2,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import uic
-from btmodules import Account, Notification
+from btmodules import Account
 from client.Client import Client
+from win11toast import toast
 import hashlib
 import threading
 import time
@@ -351,7 +352,7 @@ class MainChatWindow(QMainWindow):
 				if confirmation:
 					for row in confirmation:
 						retrieved_name = connection.sendQuery('get_all_by_id', [row[0]])[0][1]
-						Notification.createNotification(f"New Message from {retrieved_name}", row[1])
+						toast(f"New Message from {retrieved_name}", row[1], icon=resource_path("pictures\\main_icon.png"), app_id="BitTalker")
 						connection.sendQuery("message_notified", [senderID[0][0]])
 
 
